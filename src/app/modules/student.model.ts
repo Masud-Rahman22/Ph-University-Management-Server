@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
 // import validator from 'validator';
 import {
     StudentModel,
@@ -7,6 +8,7 @@ import {
     TStudent,
     TUserName,
 } from './student/student.interface';
+import config from '../config';
 
 const userNameSchema = new Schema<TUserName>({
     firstName: {
@@ -73,7 +75,8 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 });
 
 const studentSchema = new Schema<TStudent, StudentModel>({
-    id: { type: String },
+    id: { type: String, required: [true, 'Id is required'], unique: true },
+    password: { type: String, required: [true, 'Id is required'], unique: true, maxlength: [20, 'password can not exceed 20 characters'] },
     name: userNameSchema,
     gender: {
         type: String,
@@ -99,6 +102,17 @@ const studentSchema = new Schema<TStudent, StudentModel>({
         default: 'active'
     },
 });
+
+// middleware for password hashing
+studentSchema.pre('save', async function (next) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const user = this;
+    user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds),)
+    next();
+})
+studentSchema.post('save', async function () {
+    console.log(this, 'data is saved')
+})
 
 // for static
 
