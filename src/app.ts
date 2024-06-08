@@ -10,8 +10,7 @@ app.use(cors());
 app.use('/api/v1/students', studentRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-  const a = 10;
-  res.send(a);
+  res.send('app is running')
 });
 export default app;
 // console.log(process.cwd())

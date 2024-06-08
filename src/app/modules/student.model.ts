@@ -76,7 +76,7 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 
 const studentSchema = new Schema<TStudent, StudentModel>({
     id: { type: String, required: [true, 'Id is required'], unique: true },
-    password: { type: String, required: [true, 'Id is required'], unique: true, maxlength: [20, 'password can not exceed 20 characters'] },
+    password: { type: String, required: [true, 'Id is required'], maxlength: [20, 'password can not exceed 20 characters'] },
     name: userNameSchema,
     gender: {
         type: String,
@@ -84,7 +84,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
         required: true,
     },
     dateOfBirth: { type: String },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     contactNo: { type: String, required: true },
     emergencyContactNo: { type: String, required: true },
     bloodGroup: {
@@ -101,7 +101,21 @@ const studentSchema = new Schema<TStudent, StudentModel>({
         enum: ['active', 'blocked'],
         default: 'active'
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
+}, {
+    toJSON: {
+        virtuals: true,
+    }
 });
+
+// virtual
+
+studentSchema.virtual('fullName').get(function () {
+    return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
+})
 
 // middleware for password hashing
 studentSchema.pre('save', async function (next) {
@@ -110,8 +124,23 @@ studentSchema.pre('save', async function (next) {
     user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds),)
     next();
 })
-studentSchema.post('save', async function () {
-    console.log(this, 'data is saved')
+studentSchema.post('save', async function (doc, next) {
+    doc.password = ''
+    next();
+})
+
+// Query middleware
+studentSchema.pre('find', async function (next) {
+    this.find({ isDeleted: { $ne: true } })
+    next();
+})
+studentSchema.pre('findOne', async function (next) {
+    this.find({ isDeleted: { $ne: true } })
+    next();
+})
+studentSchema.pre('aggregate', async function (next) {
+    this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
+    next();
 })
 
 // for static
