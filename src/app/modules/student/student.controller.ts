@@ -1,33 +1,6 @@
 import { Request, Response } from 'express';
 import { studentServices } from './student.service';
-import studentValidationSchema from './student.validate';
-const createStudent = async (req: Request, res: Response) => {
-  try {
-    const { student: studentData } = req.body;
-    const zodParseData = studentValidationSchema.parse(studentData)
-    const result = await studentServices.createStudentIntoDb(zodParseData);
-    // console.log(error, value);
-    // if (error) {
-    //   res.status(500).json({
-    //     success: false,
-    //     message: 'Something went wrong',
-    //     error: error.details,
-    //   });
-    // }
 
-    res.status(200).json({
-      success: true,
-      message: 'Student created successfully',
-      data: result,
-    });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'Something went wrong',
-      error: err,
-    });
-  }
-};
 const getAllStudents = async (req: Request, res: Response) => {
   try {
     const result = await studentServices.getAllStudents();
@@ -37,6 +10,7 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'Student created successfully',
       data: result,
     });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
       success: false,
@@ -55,6 +29,7 @@ const getASingleStudent = async (req: Request, res: Response) => {
       message: 'Student created successfully',
       data: result,
     });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
       success: false,
@@ -73,6 +48,7 @@ const deleteASingleStudent = async (req: Request, res: Response) => {
       message: 'Student deleted successfully',
       data: result,
     });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
       success: false,
@@ -83,7 +59,6 @@ const deleteASingleStudent = async (req: Request, res: Response) => {
 };
 
 export const studentControllers = {
-  createStudent,
   getAllStudents,
   getASingleStudent,
   deleteASingleStudent
