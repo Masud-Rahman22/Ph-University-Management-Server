@@ -1,3 +1,4 @@
+import { object } from "joi";
 import config from "../../config";
 import { TStudent } from "../student/student.interface";
 import { NewUser } from "./user.interface";
@@ -16,7 +17,17 @@ const createUserIntoDb = async (password: string, studentData: TStudent) => {
 
     user.role = "student";
 
-    const result = await User.create(studentData); // built in static method
+    //set manually generated id
+    user.id = '2030100001'
+
+    //create a user
+    const result = await User.create(user); // built in static method
+
+    // create a student
+    if (Object.keys(result).length) {
+        studentData.id = result.id;
+        studentData.user = result._id;
+    }
 
     // const student = new Student(studentData)
 
