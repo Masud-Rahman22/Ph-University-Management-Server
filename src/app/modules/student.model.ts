@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt';
 // import validator from 'validator';
 import {
     StudentModel,
@@ -8,7 +7,6 @@ import {
     TStudent,
     TUserName,
 } from './student/student.interface';
-import config from '../config';
 
 const userNameSchema = new Schema<TUserName>({
     firstName: {
@@ -76,7 +74,13 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 
 const studentSchema = new Schema<TStudent, StudentModel>({
     id: { type: String, required: [true, 'Id is required'], unique: true },
-    password: { type: String, required: [true, 'Id is required'], maxlength: [20, 'password can not exceed 20 characters'] },
+    user: {
+        type: Schema.Types.ObjectId,
+        required: [true, 'User id is required'],
+        unique: true,
+        ref: 'User'
+    },
+
     name: userNameSchema,
     gender: {
         type: String,
@@ -96,11 +100,6 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     guardian: guardianSchema,
     localGuardian: localGuardianSchema,
     profileImg: { type: String },
-    isActive: {
-        type: String,
-        enum: ['active', 'blocked'],
-        default: 'active'
-    },
     isDeleted: {
         type: Boolean,
         default: false
@@ -117,17 +116,6 @@ studentSchema.virtual('fullName').get(function () {
     return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`
 })
 
-// middleware for password hashing
-studentSchema.pre('save', async function (next) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const user = this;
-    user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds),)
-    next();
-})
-studentSchema.post('save', async function (doc, next) {
-    doc.password = ''
-    next();
-})
 
 // Query middleware
 studentSchema.pre('find', async function (next) {
@@ -149,11 +137,5 @@ studentSchema.statics.isUserExists = async function (id: string) {
     const existingUser = await Student.findOne({ id })
     return existingUser;
 }
-
-// for instance
-// studentSchema.methods.isUserExists = async function (id: string) {
-//     const existingUser = await Student.findOne({ id })
-//     return existingUser;
-// }
 
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);
