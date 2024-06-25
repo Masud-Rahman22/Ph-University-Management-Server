@@ -1,15 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { studentServices } from './student.service';
+import httpStatus from 'http-status';
+import sendResponse from '../../utils/sendResponse';
 
 const getAllStudents = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await studentServices.getAllStudents();
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: 'Student created successfully',
-      data: result,
-    });
+      message: 'All Students retrieved successfully',
+      data: result
+    })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err) {
     next(err)
@@ -20,11 +23,12 @@ const getASingleStudent = async (req: Request, res: Response, next: NextFunction
     const { studentId } = req.params;
     const result = await studentServices.getASingleStudent(studentId);
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: 'Student created successfully',
-      data: result,
-    });
+      message: 'A student is retrieved successfully',
+      data: result
+    })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err) {
     next(err)
@@ -35,11 +39,12 @@ const deleteASingleStudent = async (req: Request, res: Response, next: NextFunct
     const { studentId } = req.params;
     const result = await studentServices.deleteASingleStudent(studentId);
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: 'Student deleted successfully',
-      data: result,
-    });
+      message: 'Deleted a student successfully',
+      data: result
+    })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err) {
     next(err);
