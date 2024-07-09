@@ -2,17 +2,16 @@ import { RequestHandler } from "express";
 import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { catchAsync } from "../student/student.controller";
+import { academicSemesterServices } from "./academicSemester.service";
 
 
 const createAcademicSemester: RequestHandler = catchAsync(async (req, res) => {
-    // const { password, student: studentData } = req.body;
-    // // const zodParseData = studentValidationSchema.parse(studentData)
-    // const result = await userService.createUserIntoDb(password, studentData);
+    const result = await academicSemesterServices.createAcademicSemesterIntoDb(req.body)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User created successfully',
+        message: 'Academic semester is created successfully',
         data: result
     })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
