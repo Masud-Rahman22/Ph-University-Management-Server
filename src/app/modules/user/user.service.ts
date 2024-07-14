@@ -1,33 +1,43 @@
-import config from "../../config";
-import { Student } from "../student.model";
-import { TStudent } from "../student/student.interface";
-import { TUser } from "./user.interface";
-import { User } from "./user.model";
+import config from '../../config';
+import { Student } from '../student.model';
+import { TStudent } from '../student/student.interface';
+import { AcademicSemester } from './../academicSemester/academicSemester.model';
+import { TUser } from './user.interface';
+import { User } from './user.model';
+import { generateStudentId } from './user.utils';
 
-
-const createUserIntoDb = async (password: string, studentData: TStudent) => {
-
+const createUserIntoDb = async (password: string, payload: TStudent) => {
+    // create a user object
     const userData: Partial<TUser> = {};
 
+    //if password is not given , use deafult password
     userData.password = password || (config.default_password as string);
 
-    userData.role = "student";
+    //set student role
+    userData.role = 'student';
 
-    //set manually generated id
-    userData.id = '2030100001'
+    // find academic semester info
+    const admissionSemester = await AcademicSemester.findById(
+        payload.admissionSemester,
+    );
 
-    //create a userData
-    const newUser = await User.create(userData); // built in static method
+    //set  generated id
+    userData.id = await generateStudentId(admissionSemester);
 
-    // create a student
+    // create a user
+    const newUser = await User.create(userData);
+
+    //create a student
     if (Object.keys(newUser).length) {
-        studentData.id = newUser.id;
-        studentData.user = newUser._id;
-        const newStudent = await Student.create(studentData);
+        // set id , _id as user
+        payload.id = newUser.id;
+        payload.user = newUser._id; //reference _id
+
+        const newStudent = await Student.create(payload);
         return newStudent;
     }
 };
 
-export const userService = {
-    createUserIntoDb
-}
+export const UserServices = {
+    createUserIntoDb,
+};
