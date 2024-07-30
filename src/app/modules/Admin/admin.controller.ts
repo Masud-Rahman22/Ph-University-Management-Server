@@ -10,7 +10,7 @@ const getSingleAdmin = catchAsync(async (req, res) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Admin is retrieved succesfully',
+        message: 'Admin is retrieved successfully',
         data: result,
     });
 });
