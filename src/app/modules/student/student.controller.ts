@@ -1,7 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-import { studentServices } from './student.service';
 import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';
+import { StudentServices } from './student.service';
 
 export const catchAsync = (fn: RequestHandler) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -10,7 +10,7 @@ export const catchAsync = (fn: RequestHandler) => {
 }
 
 const getAllStudents = catchAsync(async (req, res) => {
-  const result = await studentServices.getAllStudents(req.query);
+  const result = await StudentServices.getAllStudentsFromDB(req.query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -20,8 +20,8 @@ const getAllStudents = catchAsync(async (req, res) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 });
 const getASingleStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
-  const result = await studentServices.getASingleStudent(studentId);
+  const { id } = req.params;
+  const result = await StudentServices.getSingleStudentFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -33,9 +33,9 @@ const getASingleStudent = catchAsync(async (req, res) => {
 });
 
 const updateStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
+  const { id } = req.params;
   const { student } = req.body;
-  const result = await studentServices.updateStudentIntoDb(studentId, student);
+  const result = await StudentServices.updateStudentIntoDB(id, student);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -46,8 +46,8 @@ const updateStudent = catchAsync(async (req, res) => {
 });
 
 const deleteASingleStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
-  const result = await studentServices.deleteASingleStudent(studentId);
+  const { id } = req.params;
+  const result = await StudentServices.deleteStudentFromDB(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
