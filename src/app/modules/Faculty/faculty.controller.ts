@@ -10,7 +10,7 @@ const getSingleFaculty = catchAsync(async (req, res) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'Faculty is retrieved succesfully',
+        message: 'Faculty is retrieved successfully',
         data: result,
     });
 });
