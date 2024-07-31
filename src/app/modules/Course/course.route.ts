@@ -18,13 +18,13 @@ router.get(
     CourseControllers.getASingleCourse,
 );
 
-// router.patch(
-//     '/:facultyId',
-//     validateRequest(
-//         CourseValidations.createCourseValidationSchema,
-//     ),
-//     CourseControllers.updateAcademicFaculty,
-// );
+router.patch(
+    '/:id',
+    validateRequest(
+        CourseValidations.createCourseValidationSchema,
+    ),
+    CourseControllers.updateCourse
+);
 
 router.delete('/:id', CourseControllers.deleteACourse);
 router.get('/', CourseControllers.getAllCourses);
