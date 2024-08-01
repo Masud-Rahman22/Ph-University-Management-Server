@@ -11,6 +11,24 @@ const createSemesterRegistrationIntoDB = async (payload: TSemesterRegistration) 
     }
 }
 
+const getAllSemesterRegistrationsFromDB = async () => {
+
+}
+const getSingleSemesterRegistrationsFromDB = async () => {
+
+}
+const updateSemesterRegistrationIntoDB = async () => {
+
+}
+const deleteSemesterRegistrationFromDB = async () => {
+
+}
+
+
 export const SemesterRegistrationService = {
-    createSemesterRegistrationIntoDB
+    createSemesterRegistrationIntoDB,
+    getAllSemesterRegistrationsFromDB,
+    getSingleSemesterRegistrationsFromDB,
+    updateSemesterRegistrationIntoDB,
+    deleteSemesterRegistrationFromDB
 } 
