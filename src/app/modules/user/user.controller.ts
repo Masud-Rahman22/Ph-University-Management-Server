@@ -1,23 +1,49 @@
-import { RequestHandler } from "express";
-import sendResponse from "../../utils/sendResponse";
-import httpStatus from "http-status";
-import { catchAsync } from "../student/student.controller";
-import { UserServices } from "./user.service";
+import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { UserServices } from './user.service';
 
-
-const createStudent: RequestHandler = catchAsync(async (req, res) => {
+const createStudent = catchAsync(async (req, res) => {
     const { password, student: studentData } = req.body;
-    // const zodParseData = studentValidationSchema.parse(studentData)
-    const result = await UserServices.createUserIntoDb(password, studentData);
+
+    const result = await UserServices.createStudentIntoDB(password, studentData);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: 'User created successfully',
-        data: result
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        message: 'Student is created successfully',
+        data: result,
+    });
 });
-export const userControllers = {
+
+const createFaculty = catchAsync(async (req, res) => {
+    const { password, faculty: facultyData } = req.body;
+
+    const result = await UserServices.createFacultyIntoDB(password, facultyData);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Faculty is created successfully',
+        data: result,
+    });
+});
+
+const createAdmin = catchAsync(async (req, res) => {
+    const { password, admin: adminData } = req.body;
+
+    const result = await UserServices.createAdminIntoDB(password, adminData);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Admin is created successfully',
+        data: result,
+    });
+});
+
+export const UserControllers = {
     createStudent,
-}
+    createFaculty,
+    createAdmin,
+};

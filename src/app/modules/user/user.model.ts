@@ -1,8 +1,7 @@
-import { Schema, model } from "mongoose";
-import { TUser } from "./user.interface";
-import config from "../../config";
 import bcrypt from 'bcrypt';
-
+import { Schema, model } from 'mongoose';
+import config from '../../config';
+import { TUser } from './user.interface';
 const userSchema = new Schema<TUser>(
     {
         id: {
@@ -10,22 +9,17 @@ const userSchema = new Schema<TUser>(
             required: true,
             unique: true,
         },
-        // email: {
-        //     type: String,
-        //     required: true,
-        //     unique: true,
-        // },
-        password: { type: String, required: [true, 'Id is required'], maxLength: [20, 'password can not exceed 20 characters'] },
+        password: {
+            type: String,
+            required: true,
+        },
         needsPasswordChange: {
             type: Boolean,
             default: true,
         },
-        // passwordChangedAt: {
-        //     type: Date,
-        // },
         role: {
             type: String,
-            enum: ['superAdmin', 'student', 'faculty', 'admin'],
+            enum: ['student', 'faculty', 'admin'],
         },
         status: {
             type: String,
@@ -42,17 +36,21 @@ const userSchema = new Schema<TUser>(
     },
 );
 
-// middleware for password hashing
 userSchema.pre('save', async function (next) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const user = this;
-    user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt_rounds),)
+    const user = this; // doc
+    // hashing password and save into DB
+    user.password = await bcrypt.hash(
+        user.password,
+        Number(config.bcrypt_salt_rounds),
+    );
     next();
-})
-userSchema.post('save', async function (doc, next) {
-    doc.password = ''
+});
+
+// set '' after saving password
+userSchema.post('save', function (doc, next) {
+    doc.password = '';
     next();
-})
+});
 
-
-export const User = model<TUser>('User', userSchema)
+export const User = model<TUser>('User', userSchema);
