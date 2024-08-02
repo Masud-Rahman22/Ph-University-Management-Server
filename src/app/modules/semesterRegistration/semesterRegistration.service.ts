@@ -6,6 +6,14 @@ import { SemesterRegistration } from "./semesterRegistration.model"
 import QueryBuilder from "../../builder/QueryBuilder"
 
 const createSemesterRegistrationIntoDB = async (payload: TSemesterRegistration) => {
+    // if a registered semester is ONGOING or UPCOMING then we will use a validation that we can not create a registered semester it has to be ENDED
+    const isThereAnyUpcomingOrOngoingRegisteredSemester = await SemesterRegistration.findOne({
+        $or: [{ status: "ONGOING" }, { status: "UPCOMING" }]
+    })
+    if (isThereAnyUpcomingOrOngoingRegisteredSemester) {
+        throw new AppError(httpStatus.BAD_REQUEST, `There is already a ${isThereAnyUpcomingOrOngoingRegisteredSemester.status} registered semester`)
+    }
+    // creating
     const academicSemester = payload?.academicSemester
     const isAcademicSemesterExists = await AcademicSemester.findById(academicSemester)
     if (!isAcademicSemesterExists) {
@@ -28,8 +36,15 @@ const getSingleSemesterRegistrationsFromDB = async (id: string) => {
     const result = await SemesterRegistration.findById(id).populate('academicSemester')
     return result;
 }
-const updateSemesterRegistrationIntoDB = async () => {
-
+const updateSemesterRegistrationIntoDB = async (id, payload: Partial<TSemesterRegistration>) => {
+    const isSemesterRegistrationExists = await SemesterRegistration.findById(id)
+    if (!isSemesterRegistrationExists) {
+        throw new AppError(httpStatus.BAD_REQUEST, `This semester could not be found`)
+    }
+    const currentSemesterStatus = isSemesterRegistrationExists?.status
+    if (currentSemesterStatus === 'ENDED') {
+        throw new AppError(httpStatus.BAD_REQUEST, `This semester is already ${currentSemesterStatus}`)
+    }
 }
 const deleteSemesterRegistrationFromDB = async () => {
 
