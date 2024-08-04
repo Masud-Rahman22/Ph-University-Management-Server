@@ -1,4 +1,7 @@
-export type TUser = {
+/* eslint-disable no-unused-vars */
+import { Model } from "mongoose";
+
+export interface TUser {
     id: string;
     // email: string;
     password: string;
@@ -7,4 +10,10 @@ export type TUser = {
     role: 'superAdmin' | 'admin' | 'student' | 'faculty';
     status: 'in-progress' | 'blocked';
     isDeleted: boolean;
+}
+
+export interface UserModel extends Model<TUser> {
+    // myStaticMethod(): number;
+    isUserExistByCustomId(id: string): Promise<TUser>
+    isPasswordMatched(plainTextPassword: string, hashedPassword: string): Promise<boolean>
 }
