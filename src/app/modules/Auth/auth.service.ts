@@ -40,6 +40,11 @@ const loginUser = async (payload: TLoginUser) => {
     };
 }
 
+const changePasswordIntoDB = async () => {
+
+}
+
 export const AuthServices = {
-    loginUser
+    loginUser,
+    changePasswordIntoDB
 }
