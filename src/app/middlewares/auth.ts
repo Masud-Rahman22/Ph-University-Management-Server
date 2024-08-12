@@ -12,19 +12,14 @@ const auth = (...requiredRoles: TUserRole[]) => {
         if (!token) {
             throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized to access this')
         }
+        const decoded = jwt.verify(token, config.jwt_access_secret as string)
+        const role = (decoded as JwtPayload).role
 
-        jwt.verify(token, config.jwt_access_secret as string, function (err, decoded) {
-            if (err) {
-                throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized to access this')
-            }
-            const role = (decoded as JwtPayload).role
+        if (requiredRoles && !requiredRoles.includes(role)) {
+            throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized to access this')
+        }
 
-            if (requiredRoles && !requiredRoles.includes(role)) {
-                throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized to access this')
-            }
-
-            req.user = decoded as JwtPayload;
-        })
+        req.user = decoded as JwtPayload;
         next();
     })
 }
