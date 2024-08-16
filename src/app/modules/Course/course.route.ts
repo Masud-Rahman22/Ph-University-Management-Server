@@ -2,11 +2,13 @@ import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { CourseValidations } from './course.validation';
 import { CourseControllers } from './course.controller';
+import auth from '../../middlewares/auth';
 
 const router = express.Router();
 
 router.post(
     '/create-course',
+    auth('admin'),
     validateRequest(
         CourseValidations.createCourseValidationSchema,
     ),
@@ -15,11 +17,13 @@ router.post(
 
 router.get(
     '/:id',
+    auth('admin', 'faculty', 'student'),
     CourseControllers.getASingleCourse,
 );
 
 router.patch(
     '/:id',
+    auth('admin'),
     validateRequest(
         CourseValidations.createCourseValidationSchema,
     ),
