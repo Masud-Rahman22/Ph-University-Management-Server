@@ -3,14 +3,23 @@ import sendResponse from "../../utils/sendResponse";
 import { catchAsync } from "../student/student.controller"
 import { Request, Response } from "express";
 import { AuthServices } from "./auth.service";
+import config from "../../config";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
     const result = await AuthServices.loginUser(req.body)
+    const { refreshToken, accessToken, needsPasswordChange } = result;
+    res.cookie('refreshToken', refreshToken, {
+        secure: config.NODE_ENV === "production",
+        httpOnly: true,
+    })
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: 'Logged in successfully !',
-        data: result,
+        data: {
+            accessToken,
+            needsPasswordChange
+        },
     });
 })
 
